@@ -111,12 +111,13 @@ export default function TabbedProfiles({
       height: '100%', 
       display: 'flex', 
       flexDirection: 'column',
-      marginTop: 2, // Add top margin
+      marginTop: 2,
+      backgroundColor: 'white',
     }}>
       {/* Tabs */}
       <Box sx={{ 
         flexShrink: 0,
-        marginLeft: 2, // Add margin only to the tabs container
+        backgroundColor: 'rgb(28, 37, 54)', // Dark blue background for tab spacing
       }}>
         <Tabs 
           value={tabValue} 
@@ -135,21 +136,25 @@ export default function TabbedProfiles({
               borderRadius: '4px 4px 0 0',
               marginRight: 1,
               marginBottom: -1,
+              backgroundColor: 'background.paper',
+              color: 'text.primary',
               '&:hover': {
-                backgroundColor: 'action.hover',
+                backgroundColor: '#f5f5f5',
+                color: 'text.primary',
               }
             },
             '& .MuiTab-root.Mui-selected': {
-              color: 'white',
-              backgroundColor: 'rgb(28, 37, 54)', // Same blue background as left nav
-              borderBottomColor: 'rgb(28, 37, 54)',
-              borderBottom: 'none', // Remove the bottom border line
-              '& .MuiSvgIcon-root': {
-                color: 'white', // White icons for contrast
-              }
+              backgroundColor: 'rgb(220, 224, 230)',
+              borderBottomColor: 'rgb(220, 224, 230)',
+              borderBottom: 'none',
+              fontWeight: 600,
+              boxShadow: '0 -2px 4px rgba(0,0,0,0.1)',
+              zIndex: 1,
+              position: 'relative',
+              color: 'rgb(33, 37, 41)',
             },
             '& .MuiTabs-indicator': {
-              display: 'none', // This removes the blue underline
+              display: 'none', // Remove the blue underline
             }
           }}
         >

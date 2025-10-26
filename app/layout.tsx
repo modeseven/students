@@ -30,7 +30,7 @@ export default function RootLayout({
               height: '100vh',
               display: 'flex',
               flexDirection: 'column',
-              bgcolor: '#f5f5f5', // Light gray background for trx-tester
+              bgcolor: 'rgb(28, 37, 54)', // Dark blue background matching left nav
             }}
           >
             {/* Main Content Area with Nav and Content */}

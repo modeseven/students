@@ -134,7 +134,7 @@ export default function Profile({ student }: ProfileProps) {
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Sticky Header with Tabs and Student Info */}
+      {/* Sticky Header with Student Info and Tabs */}
       <Box sx={{ 
         position: 'sticky', 
         top: 0, 
@@ -144,6 +144,51 @@ export default function Profile({ student }: ProfileProps) {
         borderColor: 'divider'
       }}>
         <Paper elevation={3} sx={{ borderRadius: 0 }}>
+          {/* Student Header */}
+          <Box sx={{ p: 1.5, bgcolor: 'rgb(220, 224, 230)', color: 'rgb(33, 37, 41)' }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item>
+                <Avatar sx={{ width: 60, height: 60, bgcolor: 'rgb(28, 37, 54)', color: 'white' }}>
+                  <AccountCircle sx={{ fontSize: 40 }} />
+                </Avatar>
+              </Grid>
+              <Grid item xs>
+                <Typography variant="h5">{student.name}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body1">{student.studentNumber}</Typography>
+                  <Chip
+                    icon={<Business />}
+                    label="DAN- Danbury FCI"
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                    sx={{ px: 1 }}
+                  />
+                </Box>
+              </Grid>
+              <Grid item>
+                <Chip
+                  icon={<Warning />}
+                  label="WitSec"
+                  color="error"
+                  variant="filled"
+                  sx={{ 
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    px: 2,
+                    py: 1,
+                    backgroundColor: '#d32f2f',
+                    color: 'white',
+                    '& .MuiChip-icon': {
+                      color: 'white',
+                      fontSize: '1.2rem'
+                    }
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+
           {/* Main Tabs */}
           <Box sx={{ 
             borderBottom: 1, 
@@ -226,51 +271,6 @@ export default function Profile({ student }: ProfileProps) {
                 sx={{ minHeight: 'auto', py: 1 }}
               />
             </Tabs>
-          </Box>
-
-          {/* Student Header */}
-          <Box sx={{ p: 1.5, bgcolor: 'rgb(220, 224, 230)', color: 'rgb(33, 37, 41)' }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                <Avatar sx={{ width: 60, height: 60, bgcolor: 'rgb(28, 37, 54)', color: 'white' }}>
-                  <AccountCircle sx={{ fontSize: 40 }} />
-                </Avatar>
-              </Grid>
-              <Grid item xs>
-                <Typography variant="h5">{student.name}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="body1">{student.studentNumber}</Typography>
-                  <Chip
-                    icon={<Business />}
-                    label="DAN- Danbury FCI"
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                    sx={{ px: 1 }}
-                  />
-                </Box>
-              </Grid>
-              <Grid item>
-                <Chip
-                  icon={<Warning />}
-                  label="WitSec"
-                  color="error"
-                  variant="filled"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    fontSize: '0.9rem',
-                    px: 2,
-                    py: 1,
-                    backgroundColor: '#d32f2f',
-                    color: 'white',
-                    '& .MuiChip-icon': {
-                      color: 'white',
-                      fontSize: '1.2rem'
-                    }
-                  }}
-                />
-              </Grid>
-            </Grid>
           </Box>
 
           {/* Education Sub-tabs - Only show when Education tab is selected */}
