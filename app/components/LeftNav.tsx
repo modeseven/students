@@ -27,7 +27,7 @@ import InmateSearch from './InmateSearch';
 import { useInmateContext } from '../contexts/InmateContext';
 
 const LeftNav: React.FC = () => {
-  const { handleInmateSelect } = useInmateContext();
+  const { handleInmateSelect, handleMainTabOpen } = useInmateContext();
   const [accountOpen, setAccountOpen] = useState(false);
 
   const handleAccountClick = () => {
@@ -71,9 +71,9 @@ const LeftNav: React.FC = () => {
             icon={<People />}
             label="Inmates"
             subItems={[
-              { id: 'census-roster', label: 'Census/Roster (PP30)', onClick: () => console.log('Census/Roster (PP30) clicked') },
+              { id: 'census-roster', label: 'Census/Roster (PP30)', onClick: () => handleMainTabOpen('census-roster') },
               { id: 'name-search', label: 'Name Search', onClick: () => console.log('Name Search clicked') },
-              { id: 'load-inmate', label: 'Load Inmate', onClick: () => console.log('Load Inmate clicked') },
+              { id: 'load-inmate', label: 'Load Inmate', onClick: () => handleMainTabOpen('load-inmate') },
               { id: 'population-report', label: 'Population Report', onClick: () => console.log('Population Report clicked') },
             ]}
             defaultExpanded={true}

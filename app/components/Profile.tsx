@@ -145,7 +145,11 @@ export default function Profile({ student }: ProfileProps) {
       }}>
         <Paper elevation={3} sx={{ borderRadius: 0 }}>
           {/* Main Tabs */}
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Box sx={{ 
+            borderBottom: 1, 
+            borderColor: 'divider',
+            bgcolor: 'rgb(28, 37, 54)' // Same blue background as left nav
+          }}>
             <Tabs 
               value={tabValue} 
               onChange={handleTabChange} 
@@ -162,13 +166,20 @@ export default function Profile({ student }: ProfileProps) {
                   minWidth: 'auto',
                   px: 3,
                   py: 1,
+                  color: 'white', // White text for contrast
                   '&:hover': {
-                    backgroundColor: 'action.hover',
+                    backgroundColor: 'rgba(255,255,255,0.1)', // Subtle white overlay on hover
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: 'white', // White icons for contrast
                   }
                 },
                 '& .MuiTab-root.Mui-selected': {
-                  color: 'primary.main',
-                  backgroundColor: 'action.selected',
+                  color: 'white',
+                  backgroundColor: 'rgba(255,255,255,0.15)', // Slightly more opaque white for selected state
+                  '& .MuiSvgIcon-root': {
+                    color: 'white',
+                  }
                 }
               }}
             >

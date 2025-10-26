@@ -8,8 +8,12 @@ import {
   Tab,
   Typography
 } from '@mui/material';
-import { School, Close } from '@mui/icons-material';
+import { School, Close, List, PersonAdd } from '@mui/icons-material';
 import Profile, { Student } from './Profile';
+import CensusRoster from './CensusRoster';
+import LoadInmate from './LoadInmate';
+
+export type MainTabType = 'census-roster' | 'load-inmate' | null;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -35,16 +39,20 @@ function TabPanel(props: TabPanelProps) {
 
 interface TabbedProfilesProps {
   students: Student[];
+  mainTab: MainTabType;
   activeTab?: number;
   onTabChange?: (newValue: number) => void;
   onCloseTab?: (studentId: string) => void;
+  onCloseMainTab?: () => void;
 }
 
 export default function TabbedProfiles({ 
   students, 
+  mainTab,
   activeTab = 0, 
   onTabChange, 
-  onCloseTab 
+  onCloseTab,
+  onCloseMainTab
 }: TabbedProfilesProps) {
   const [internalTabValue, setInternalTabValue] = useState(0);
   
@@ -66,14 +74,32 @@ export default function TabbedProfiles({
     }
   };
 
-  if (!students || students.length === 0) {
+  const handleCloseMainTab = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (onCloseMainTab) {
+      onCloseMainTab();
+    }
+  };
+
+  const getMainTabInfo = (tabType: MainTabType) => {
+    switch (tabType) {
+      case 'census-roster':
+        return { icon: <List />, label: 'Census Roster' };
+      case 'load-inmate':
+        return { icon: <PersonAdd />, label: 'Load Inmate' };
+      default:
+        return { icon: null, label: '' };
+    }
+  };
+
+  if (!mainTab && (!students || students.length === 0)) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" color="text.secondary" align="center">
-          No inmate profiles open
+          No content open
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
-          Search for an inmate to open their profile
+          Select a menu item or search for an inmate to get started
         </Typography>
       </Box>
     );
@@ -87,17 +113,15 @@ export default function TabbedProfiles({
       flexDirection: 'column',
       marginTop: 2, // Add top margin
     }}>
-      {/* Profile Tabs */}
+      {/* Tabs */}
       <Box sx={{ 
-        borderBottom: 1, 
-        borderColor: 'divider', 
         flexShrink: 0,
         marginLeft: 2, // Add margin only to the tabs container
       }}>
         <Tabs 
           value={tabValue} 
           onChange={handleTabChange} 
-          aria-label="student profiles tabs"
+          aria-label="main and profile tabs"
           variant="scrollable"
           scrollButtons="auto"
           sx={{
@@ -116,18 +140,26 @@ export default function TabbedProfiles({
               }
             },
             '& .MuiTab-root.Mui-selected': {
-              color: 'primary.main',
-              backgroundColor: 'background.paper',
-              borderBottomColor: 'background.paper',
+              color: 'white',
+              backgroundColor: 'rgb(28, 37, 54)', // Same blue background as left nav
+              borderBottomColor: 'rgb(28, 37, 54)',
+              borderBottom: 'none', // Remove the bottom border line
+              '& .MuiSvgIcon-root': {
+                color: 'white', // White icons for contrast
+              }
+            },
+            '& .MuiTabs-indicator': {
+              display: 'none', // This removes the blue underline
             }
           }}
         >
-          {students.map((student, index) => (
+          {/* Main Tab */}
+          {mainTab && (
             <Tab
-              key={student.id}
+              key="main-tab"
               icon={
                 <Close 
-                  onClick={(e) => handleCloseTab(e, student.id)}
+                  onClick={handleCloseMainTab}
                   sx={{ 
                     cursor: 'pointer',
                     '&:hover': { 
@@ -138,21 +170,59 @@ export default function TabbedProfiles({
                 />
               }
               iconPosition="end"
-              label={`${student.name} (${student.studentNumber})`}
-              id={`profile-tab-${index}`}
-              aria-controls={`profile-tabpanel-${index}`}
+              label={getMainTabInfo(mainTab).label}
+              id="main-tab"
+              aria-controls="main-tabpanel"
             />
-          ))}
+          )}
+          
+          {/* Inmate Profile Tabs */}
+          {students.map((student, index) => {
+            const tabIndex = mainTab ? index + 1 : index;
+            return (
+              <Tab
+                key={student.id}
+                icon={
+                  <Close 
+                    onClick={(e) => handleCloseTab(e, student.id)}
+                    sx={{ 
+                      cursor: 'pointer',
+                      '&:hover': { 
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        borderRadius: '50%'
+                      }
+                    }}
+                  />
+                }
+                iconPosition="end"
+                label={`${student.name} (${student.studentNumber})`}
+                id={`profile-tab-${tabIndex}`}
+                aria-controls={`profile-tabpanel-${tabIndex}`}
+              />
+            );
+          })}
         </Tabs>
       </Box>
 
-      {/* Profile Content - Scrollable */}
+      {/* Content - Scrollable */}
       <Box sx={{ flex: 1, overflow: 'auto' }}>
-        {students.map((student, index) => (
-          <TabPanel key={student.id} value={tabValue} index={index}>
-            <Profile student={student} />
+        {/* Main Tab Content */}
+        {mainTab && (
+          <TabPanel value={tabValue} index={0}>
+            {mainTab === 'census-roster' && <CensusRoster />}
+            {mainTab === 'load-inmate' && <LoadInmate />}
           </TabPanel>
-        ))}
+        )}
+        
+        {/* Inmate Profile Content */}
+        {students.map((student, index) => {
+          const tabIndex = mainTab ? index + 1 : index;
+          return (
+            <TabPanel key={student.id} value={tabValue} index={tabIndex}>
+              <Profile student={student} />
+            </TabPanel>
+          );
+        })}
       </Box>
     </Box>
   );
