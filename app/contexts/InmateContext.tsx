@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Student } from '../components/Profile';
 import { MainTabType } from '../components/TabbedProfiles';
 
 interface TabState {
@@ -9,112 +8,104 @@ interface TabState {
   educationTab: number;
 }
 
+interface Inmate {
+  id: string;
+  name: string;
+  studentNumber: string;
+}
+
 interface InmateContextType {
-  openStudents: Student[];
+  openInmates: Inmate[];
   activeTab: number;
   mainTab: MainTabType;
-  tabStates: Record<string, TabState>; // studentId -> TabState
+  tabStates: Record<string, TabState>; // inmateId -> TabState
   handleInmateSelect: (inmate: any) => void;
   handleTabChange: (newValue: number) => void;
-  handleCloseTab: (studentId: string) => void;
-  handleMainTabChange: (studentId: string, mainTab: number) => void;
-  handleEducationTabChange: (studentId: string, educationTab: number) => void;
+  handleCloseTab: (inmateId: string) => void;
+  handleMainTabChange: (inmateId: string, mainTab: number) => void;
+  handleEducationTabChange: (inmateId: string, educationTab: number) => void;
   handleMainTabOpen: (tabType: MainTabType) => void;
   handleMainTabClose: () => void;
 }
 
 const InmateContext = createContext<InmateContextType | undefined>(undefined);
 
-// Convert inmate data to student format (without API calls - lazy loading)
-const convertInmateToStudent = (inmate: any): Student => {
+// Convert inmate data to minimal format
+const convertInmate = (inmate: any): Inmate => {
   return {
     id: inmate.registerNumber,
     name: inmate.name,
     studentNumber: inmate.registerNumber,
-    grade: 'Inmate',
-    gpa: 0, // Will be loaded when transcript tab is opened
-    currentCourses: [], // Will be loaded when transcript tab is opened
-    highTests: [], // Will be loaded when transcript tab is opened
-    reviews: [], // Will be loaded when reviews tab is opened
-    allTests: [], // Will be loaded when tests tab is opened
-    interview: {
-      id: inmate.registerNumber,
-      date: new Date().toISOString().split('T')[0],
-      interviewer: 'System',
-      notes: `Inmate profile for ${inmate.name} (${inmate.registerNumber})`,
-      recommendations: [],
-      status: 'scheduled'
-    }
   };
 };
 
 export function InmateProvider({ children }: { children: React.ReactNode }) {
-  const [openStudents, setOpenStudents] = useState<Student[]>([]);
+  const [openInmates, setOpenInmates] = useState<Inmate[]>([]);
   const [activeTab, setActiveTab] = useState(0);
-  const [mainTab, setMainTab] = useState<MainTabType>(null);
+  const [mainTab, setMainTab] = useState<MainTabType>('census-roster');
   const [tabStates, setTabStates] = useState<Record<string, TabState>>({});
 
   const handleInmateSelect = useCallback((inmate: any) => {
-    const student = convertInmateToStudent(inmate);
+    const inmateData = convertInmate(inmate);
     
     // Check if this inmate is already open
-    const existingIndex = openStudents.findIndex(s => s.id === student.id);
+    const existingIndex = openInmates.findIndex(i => i.id === inmateData.id);
     
     if (existingIndex >= 0) {
       // If already open, switch to that tab (accounting for main tab at index 0)
       setActiveTab(mainTab ? existingIndex + 1 : existingIndex);
     } else {
       // Add new tab and switch to it (accounting for main tab at index 0)
-      setOpenStudents(prev => [...prev, student]);
-      const newTabIndex = mainTab ? openStudents.length + 1 : openStudents.length;
+      setOpenInmates(prev => [...prev, inmateData]);
+      const newTabIndex = mainTab ? openInmates.length + 1 : openInmates.length;
       setActiveTab(newTabIndex);
       
-      // Initialize tab state for new student
+      // Initialize tab state for new inmate
       setTabStates(prev => ({
         ...prev,
-        [student.id]: { mainTab: 0, educationTab: 0 }
+        [inmateData.id]: { mainTab: 0, educationTab: 0 }
       }));
     }
-  }, [openStudents.length, mainTab]);
+  }, [openInmates.length, mainTab]);
 
   const handleTabChange = useCallback((newValue: number) => {
     setActiveTab(newValue);
   }, []);
 
-  const handleCloseTab = useCallback((studentId: string) => {
-    setOpenStudents(prev => {
-      const newStudents = prev.filter(s => s.id !== studentId);
+  const handleCloseTab = useCallback((inmateId: string) => {
+    setOpenInmates(prev => {
+      const newInmates = prev.filter(i => i.id !== inmateId);
       
       // Adjust active tab if needed (accounting for main tab)
-      const totalTabs = mainTab ? newStudents.length + 1 : newStudents.length;
+      const totalTabs = mainTab ? newInmates.length + 1 : newInmates.length;
       if (activeTab >= totalTabs && totalTabs > 0) {
         setActiveTab(totalTabs - 1);
       } else if (totalTabs === 0) {
         setActiveTab(0);
       }
       
-      return newStudents;
+      return newInmates;
     });
     
-    // Remove tab state for closed student
+    // Remove tab state for closed inmate
     setTabStates(prev => {
       const newStates = { ...prev };
-      delete newStates[studentId];
+      delete newStates[inmateId];
       return newStates;
     });
   }, [activeTab, mainTab]);
 
-  const handleMainTabChange = useCallback((studentId: string, mainTab: number) => {
+  const handleMainTabChange = useCallback((inmateId: string, mainTab: number) => {
     setTabStates(prev => ({
       ...prev,
-      [studentId]: { ...prev[studentId], mainTab }
+      [inmateId]: { ...prev[inmateId], mainTab }
     }));
   }, []);
 
-  const handleEducationTabChange = useCallback((studentId: string, educationTab: number) => {
+  const handleEducationTabChange = useCallback((inmateId: string, educationTab: number) => {
     setTabStates(prev => ({
       ...prev,
-      [studentId]: { ...prev[studentId], educationTab }
+      [inmateId]: { ...prev[inmateId], educationTab }
     }));
   }, []);
 
@@ -126,16 +117,16 @@ export function InmateProvider({ children }: { children: React.ReactNode }) {
   const handleMainTabClose = useCallback(() => {
     setMainTab(null);
     // If there are inmate tabs, switch to the first one, otherwise stay at 0
-    if (openStudents.length > 0) {
+    if (openInmates.length > 0) {
       setActiveTab(0);
     } else {
       setActiveTab(0);
     }
-  }, [openStudents.length]);
+  }, [openInmates.length]);
 
   return (
     <InmateContext.Provider value={{
-      openStudents,
+      openInmates,
       activeTab,
       mainTab,
       tabStates,
@@ -151,6 +142,9 @@ export function InmateProvider({ children }: { children: React.ReactNode }) {
     </InmateContext.Provider>
   );
 }
+
+// Export Inmate type
+export type { Inmate };
 
 export function useInmateContext() {
   const context = useContext(InmateContext);

@@ -18,8 +18,7 @@ import {
   Chip,
   Grid,
   Avatar,
-  Divider,
-  Button
+  Divider
 } from '@mui/material';
 import { 
   School, 
@@ -38,6 +37,7 @@ import {
 } from '@mui/icons-material';
 import EducationTabs from './EducationTabs';
 import { useInmateContext } from '../contexts/InmateContext';
+import { SELECTED_TAB_BG, SELECTED_TAB_TEXT, TABS_CONTAINER_BG } from '../constants/colors';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -111,11 +111,37 @@ interface Interview {
   status: 'scheduled' | 'completed' | 'pending';
 }
 
-interface ProfileProps {
-  student: Student;
+interface Inmate {
+  id: string;
+  name: string;
+  studentNumber: string;
 }
 
-export default function Profile({ student }: ProfileProps) {
+interface ProfileProps {
+  inmate: Inmate;
+}
+
+export default function Profile({ inmate }: ProfileProps) {
+  // Convert Inmate to Student format for internal use
+  const student: Student = {
+    id: inmate.id,
+    name: inmate.name,
+    studentNumber: inmate.studentNumber,
+    grade: 'Inmate',
+    gpa: 0,
+    currentCourses: [],
+    highTests: [],
+    reviews: [],
+    allTests: [],
+    interview: {
+      id: inmate.id,
+      date: new Date().toISOString().split('T')[0],
+      interviewer: 'System',
+      notes: '',
+      recommendations: [],
+      status: 'scheduled'
+    }
+  };
   const { tabStates, handleMainTabChange, handleEducationTabChange: contextHandleEducationTabChange } = useInmateContext();
   
   // Get current tab state for this student, default to 0 if not found
@@ -145,10 +171,10 @@ export default function Profile({ student }: ProfileProps) {
       }}>
         <Paper elevation={3} sx={{ borderRadius: 0 }}>
           {/* Student Header */}
-          <Box sx={{ p: 1.5, bgcolor: 'rgb(220, 224, 230)', color: 'rgb(33, 37, 41)' }}>
+          <Box sx={{ p: 1.5, bgcolor: SELECTED_TAB_BG, color: SELECTED_TAB_TEXT }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item>
-                <Avatar sx={{ width: 60, height: 60, bgcolor: 'rgb(28, 37, 54)', color: 'white' }}>
+                <Avatar sx={{ width: 60, height: 60, bgcolor: TABS_CONTAINER_BG, color: 'white' }}>
                   <AccountCircle sx={{ fontSize: 40 }} />
                 </Avatar>
               </Grid>
@@ -193,7 +219,7 @@ export default function Profile({ student }: ProfileProps) {
           <Box sx={{ 
             borderBottom: 1, 
             borderColor: 'divider',
-            bgcolor: 'rgb(28, 37, 54)' // Same blue background as left nav
+            bgcolor: TABS_CONTAINER_BG
           }}>
             <Tabs 
               value={tabValue} 

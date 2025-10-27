@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Container,
   Tabs,
   Tab,
   Typography
 } from '@mui/material';
-import { School, Close, List, PersonAdd } from '@mui/icons-material';
-import Profile, { Student } from './Profile';
+import { Close, List, PersonAdd, Person } from '@mui/icons-material';
+import Profile from './Profile';
 import CensusRoster from './CensusRoster';
 import LoadInmate from './LoadInmate';
+import { SELECTED_TAB_BG, SELECTED_TAB_TEXT, TABS_CONTAINER_BG, HOVER_TAB_BG } from '../constants/colors';
+import { Inmate } from '../contexts/InmateContext';
 
 export type MainTabType = 'census-roster' | 'load-inmate' | null;
 
@@ -38,16 +39,16 @@ function TabPanel(props: TabPanelProps) {
 }
 
 interface TabbedProfilesProps {
-  students: Student[];
+  inmates: Inmate[];
   mainTab: MainTabType;
   activeTab?: number;
   onTabChange?: (newValue: number) => void;
-  onCloseTab?: (studentId: string) => void;
+  onCloseTab?: (inmateId: string) => void;
   onCloseMainTab?: () => void;
 }
 
 export default function TabbedProfiles({ 
-  students, 
+  inmates, 
   mainTab,
   activeTab = 0, 
   onTabChange, 
@@ -67,10 +68,10 @@ export default function TabbedProfiles({
     }
   };
 
-  const handleCloseTab = (event: React.MouseEvent, studentId: string) => {
+  const handleCloseTab = (event: React.MouseEvent, inmateId: string) => {
     event.stopPropagation();
     if (onCloseTab) {
-      onCloseTab(studentId);
+      onCloseTab(inmateId);
     }
   };
 
@@ -88,11 +89,11 @@ export default function TabbedProfiles({
       case 'load-inmate':
         return { icon: <PersonAdd />, label: 'Load Inmate' };
       default:
-        return { icon: null, label: '' };
+        return { icon: undefined, label: '' };
     }
   };
 
-  if (!mainTab && (!students || students.length === 0)) {
+  if (!mainTab && (!inmates || inmates.length === 0)) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="h5" color="text.secondary" align="center">
@@ -112,19 +113,18 @@ export default function TabbedProfiles({
       display: 'flex', 
       flexDirection: 'column',
       marginTop: 2,
-      backgroundColor: 'white',
     }}>
       {/* Tabs */}
       <Box sx={{ 
         flexShrink: 0,
-        backgroundColor: 'rgb(28, 37, 54)', // Dark blue background for tab spacing
+        backgroundColor: TABS_CONTAINER_BG,
       }}>
         <Tabs 
           value={tabValue} 
           onChange={handleTabChange} 
           aria-label="main and profile tabs"
           variant="scrollable"
-          scrollButtons="auto"
+          scrollButtons={false}
           sx={{
             '& .MuiTab-root': {
               minHeight: 48,
@@ -139,19 +139,19 @@ export default function TabbedProfiles({
               backgroundColor: 'background.paper',
               color: 'text.primary',
               '&:hover': {
-                backgroundColor: '#f5f5f5',
+                backgroundColor: HOVER_TAB_BG,
                 color: 'text.primary',
               }
             },
             '& .MuiTab-root.Mui-selected': {
-              backgroundColor: 'rgb(220, 224, 230)',
-              borderBottomColor: 'rgb(220, 224, 230)',
+              backgroundColor: SELECTED_TAB_BG,
+              borderBottomColor: SELECTED_TAB_BG,
               borderBottom: 'none',
               fontWeight: 600,
               boxShadow: '0 -2px 4px rgba(0,0,0,0.1)',
               zIndex: 1,
               position: 'relative',
-              color: 'rgb(33, 37, 41)',
+              color: SELECTED_TAB_TEXT,
             },
             '& .MuiTabs-indicator': {
               display: 'none', // Remove the blue underline
@@ -162,19 +162,8 @@ export default function TabbedProfiles({
           {mainTab && (
             <Tab
               key="main-tab"
-              icon={
-                <Close 
-                  onClick={handleCloseMainTab}
-                  sx={{ 
-                    cursor: 'pointer',
-                    '&:hover': { 
-                      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                      borderRadius: '50%'
-                    }
-                  }}
-                />
-              }
-              iconPosition="end"
+              icon={getMainTabInfo(mainTab).icon}
+              iconPosition="start"
               label={getMainTabInfo(mainTab).label}
               id="main-tab"
               aria-controls="main-tabpanel"
@@ -182,16 +171,26 @@ export default function TabbedProfiles({
           )}
           
           {/* Inmate Profile Tabs */}
-          {students.map((student, index) => {
+          {inmates.map((inmate, index) => {
             const tabIndex = mainTab ? index + 1 : index;
             return (
               <Tab
-                key={student.id}
+                key={inmate.id}
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Person sx={{ fontSize: 20 }} />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <span>{inmate.name}</span>
+                      <span style={{ fontSize: '0.7rem', color: '#757575', fontWeight: 'normal' }}>{inmate.studentNumber}</span>
+                    </Box>
+                  </Box>
+                }
                 icon={
                   <Close 
-                    onClick={(e) => handleCloseTab(e, student.id)}
+                    onClick={(e) => handleCloseTab(e, inmate.id)}
                     sx={{ 
                       cursor: 'pointer',
+                      fontSize: 18,
                       '&:hover': { 
                         backgroundColor: 'rgba(0, 0, 0, 0.1)',
                         borderRadius: '50%'
@@ -200,7 +199,6 @@ export default function TabbedProfiles({
                   />
                 }
                 iconPosition="end"
-                label={`${student.name} (${student.studentNumber})`}
                 id={`profile-tab-${tabIndex}`}
                 aria-controls={`profile-tabpanel-${tabIndex}`}
               />
@@ -210,7 +208,11 @@ export default function TabbedProfiles({
       </Box>
 
       {/* Content - Scrollable */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+      <Box sx={{ 
+        flex: 1, 
+        overflow: 'auto',
+        backgroundColor: tabValue === 0 && mainTab ? SELECTED_TAB_BG : 'white'
+      }}>
         {/* Main Tab Content */}
         {mainTab && (
           <TabPanel value={tabValue} index={0}>
@@ -220,11 +222,11 @@ export default function TabbedProfiles({
         )}
         
         {/* Inmate Profile Content */}
-        {students.map((student, index) => {
+        {inmates.map((inmate, index) => {
           const tabIndex = mainTab ? index + 1 : index;
           return (
-            <TabPanel key={student.id} value={tabValue} index={tabIndex}>
-              <Profile student={student} />
+            <TabPanel key={inmate.id} value={tabValue} index={tabIndex}>
+              <Profile inmate={inmate} />
             </TabPanel>
           );
         })}

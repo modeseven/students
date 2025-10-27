@@ -11,7 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button,
+  Fab,
   CircularProgress,
   Alert
 } from '@mui/material';
@@ -102,14 +102,6 @@ export default function Transcript({ student }: TranscriptProps) {
       {/* Education Information Table */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5">Education Information</Typography>
-        <Button
-          variant="outlined"
-          startIcon={<Print />}
-          onClick={handlePrint}
-          size="small"
-        >
-          Print Transcript
-        </Button>
       </Box>
       <TableContainer component={Paper} sx={{ mb: 3 }}>
         <Table>
@@ -182,7 +174,7 @@ export default function Transcript({ student }: TranscriptProps) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {transcriptData.tests.filter((test: any) => test.type === 'high').map((test) => (
+            {transcriptData.tests.map((test) => (
               <TableRow key={test.id}>
                 <TableCell>{test.name}</TableCell>
                 <TableCell>{test.subject}</TableCell>
@@ -199,6 +191,21 @@ export default function Transcript({ student }: TranscriptProps) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Floating Print Button */}
+      <Fab
+        color="primary"
+        aria-label="print"
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          zIndex: 1000
+        }}
+        onClick={handlePrint}
+      >
+        <Print />
+      </Fab>
     </Box>
   );
 }

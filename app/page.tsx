@@ -6,7 +6,7 @@ import { useInmateContext } from './contexts/InmateContext';
 
 export default function Home() {
   const { 
-    openStudents, 
+    openInmates, 
     activeTab, 
     mainTab,
     handleTabChange, 
@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <TabbedProfiles 
-      students={openStudents}
+      inmates={openInmates}
       mainTab={mainTab}
       activeTab={activeTab}
       onTabChange={handleTabChange}
