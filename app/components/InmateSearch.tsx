@@ -121,7 +121,7 @@ const InmateSearch: React.FC<InmateSearchProps> = ({ onInmateSelect }) => {
     <>
       <TextField
         ref={inputRef}
-        placeholder="Try: 44444-444, 55555-555, or 11111-111"
+        placeholder="#####-###"
         variant="outlined"
         size="small"
         fullWidth

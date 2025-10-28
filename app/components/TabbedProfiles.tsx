@@ -7,14 +7,15 @@ import {
   Tab,
   Typography
 } from '@mui/material';
-import { Close, List, PersonAdd, Person } from '@mui/icons-material';
+import { Close, List, PersonAdd, Person, Description } from '@mui/icons-material';
 import Profile from './Profile';
 import CensusRoster from './CensusRoster';
 import LoadInmate from './LoadInmate';
+import Transcript2 from './Transcript2';
 import { SELECTED_TAB_BG, SELECTED_TAB_TEXT, TABS_CONTAINER_BG, HOVER_TAB_BG } from '../constants/colors';
 import { Inmate } from '../contexts/InmateContext';
 
-export type MainTabType = 'census-roster' | 'load-inmate' | null;
+export type MainTabType = 'census-roster' | 'load-inmate' | 'sample-page' | null;
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -88,6 +89,8 @@ export default function TabbedProfiles({
         return { icon: <List />, label: 'Census Roster' };
       case 'load-inmate':
         return { icon: <PersonAdd />, label: 'Load Inmate' };
+      case 'sample-page':
+        return { icon: <Description />, label: 'Transcript 2' };
       default:
         return { icon: undefined, label: '' };
     }
@@ -218,6 +221,7 @@ export default function TabbedProfiles({
           <TabPanel value={tabValue} index={0}>
             {mainTab === 'census-roster' && <CensusRoster />}
             {mainTab === 'load-inmate' && <LoadInmate />}
+            {mainTab === 'sample-page' && <Transcript2 />}
           </TabPanel>
         )}
         

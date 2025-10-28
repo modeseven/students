@@ -75,6 +75,7 @@ const LeftNav: React.FC = () => {
               { id: 'name-search', label: 'Name Search', onClick: () => console.log('Name Search clicked') },
               { id: 'load-inmate', label: 'Load Inmate', onClick: () => handleMainTabOpen('load-inmate') },
               { id: 'population-report', label: 'Population Report', onClick: () => console.log('Population Report clicked') },
+              { id: 'sample-page', label: 'Transcript 2', onClick: () => handleMainTabOpen('sample-page') },
             ]}
             defaultExpanded={true}
           />
