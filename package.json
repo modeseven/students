@@ -6,7 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "codemod:safe-get": "jscodeshift --parser=tsx -t codemods/replace-unsafe-bracket-notation.js",
+    "codemod:find": "node codemods/find-unsafe-patterns-ast.js",
+    "codemod:preview": "jscodeshift --parser=tsx -t codemods/replace-unsafe-bracket-notation.js --dry --print",
+    "codemod:apply": "jscodeshift --parser=tsx -t codemods/replace-unsafe-bracket-notation.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -19,13 +25,20 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.5",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-jest": "^29.1.2",
+    "typescript": "^5",
+    "jscodeshift": "^0.15.1",
+    "@babel/parser": "^7.23.0",
+    "@babel/core": "^7.23.0"
   }
 }

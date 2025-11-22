@@ -1,0 +1,23 @@
+rules:
+  - id: unsafe-array-access
+    message: |
+      Unsafe array access with a variable key might lead to prototype pollution
+      or object injection vulnerabilities.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    patterns:
+      - pattern: $OBJ[$VAR]
+      - pattern-not: $OBJ['$LIT']
+      - pattern-not: $OBJ["$LIT"]
+      - pattern-not: $OBJ[0]
+      - pattern-not: $OBJ[1]
+      - pattern-not: $OBJ[2]
+      - pattern-not: $OBJ[3]
+      - pattern-not: $OBJ[4]
+      - pattern-not: $OBJ[5]
+      - pattern-not: $OBJ[6]
+      - pattern-not: $OBJ[7]
+      - pattern-not: $OBJ[8]
+      - pattern-not: $OBJ[9]

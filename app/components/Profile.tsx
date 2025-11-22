@@ -1,6 +1,6 @@
-'use client';
-
+'use client';;
 import React from 'react';
+import { safeGet } from '../api/proxy/[...path]/safeGet';
 import {
   Box,
   Paper,
@@ -135,7 +135,7 @@ export default function Profile({ inmate }: ProfileProps) {
     allTests: [],
     interview: {
       id: inmate.id,
-      date: new Date().toISOString().split('T')[0],
+      date: safeGet(new Date().toISOString().split('T'), 0),
       interviewer: 'System',
       notes: '',
       recommendations: [],
@@ -145,7 +145,7 @@ export default function Profile({ inmate }: ProfileProps) {
   const { tabStates, handleMainTabChange, handleEducationTabChange: contextHandleEducationTabChange } = useInmateContext();
   
   // Get current tab state for this student, default to 0 if not found
-  const currentTabState = tabStates[student.id] || { mainTab: 0, educationTab: 0 };
+  const currentTabState = safeGet(tabStates, student.id) || { mainTab: 0, educationTab: 0 };
   const tabValue = currentTabState.mainTab;
   const educationTabValue = currentTabState.educationTab;
 

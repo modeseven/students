@@ -1,6 +1,6 @@
-'use client';
-
+'use client';;
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { safeGet } from '../api/proxy/[...path]/safeGet';
 import { MainTabType } from '../components/TabbedProfiles';
 
 interface TabState {
@@ -90,23 +90,38 @@ export function InmateProvider({ children }: { children: React.ReactNode }) {
     // Remove tab state for closed inmate
     setTabStates(prev => {
       const newStates = { ...prev };
-      delete newStates[inmateId];
+      // Use safeGet to check if exists, then delete using bracket notation (safe for delete operations)
+      if (safeGet(newStates, inmateId) !== undefined) {
+        delete newStates[inmateId];
+      }
       return newStates;
     });
   }, [activeTab, mainTab]);
 
   const handleMainTabChange = useCallback((inmateId: string, mainTab: number) => {
-    setTabStates(prev => ({
-      ...prev,
-      [inmateId]: { ...prev[inmateId], mainTab }
-    }));
+    setTabStates(prev => {
+      const existing = safeGet(prev, inmateId);
+      return {
+        ...prev,
+        [inmateId]: { 
+          mainTab,
+          educationTab: existing?.educationTab ?? 0
+        }
+      };
+    });
   }, []);
 
   const handleEducationTabChange = useCallback((inmateId: string, educationTab: number) => {
-    setTabStates(prev => ({
-      ...prev,
-      [inmateId]: { ...prev[inmateId], educationTab }
-    }));
+    setTabStates(prev => {
+      const existing = safeGet(prev, inmateId);
+      return {
+        ...prev,
+        [inmateId]: { 
+          mainTab: existing?.mainTab ?? 0,
+          educationTab
+        }
+      };
+    });
   }, []);
 
   const handleMainTabOpen = useCallback((tabType: MainTabType) => {

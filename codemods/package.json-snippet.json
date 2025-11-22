@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "codemod:find": "node codemods/find-unsafe-patterns-ast.js",
+    "codemod:preview": "jscodeshift --parser=tsx -t codemods/replace-unsafe-bracket-notation.js --dry --print",
+    "codemod:apply": "jscodeshift --parser=tsx -t codemods/replace-unsafe-bracket-notation.js"
+  },
+  "devDependencies": {
+    "jscodeshift": "^0.15.1",
+    "@babel/parser": "^7.23.0",
+    "@babel/core": "^7.23.0"
+  }
+}
+
